@@ -17,7 +17,7 @@ hostfile:
   - name: rhel8-edge-2
     ip: 10.0.133.2
   - name: elasticsearch
-  	ip: 10.0.133.3
+    ip: 10.0.133.3
 ```
 
 ## rsyslog
