@@ -1,0 +1,11 @@
+---
+- name: RHEL Edge Node Configuration
+  hosts: all
+  become: yes
+  roles:
+    - role: hosts
+      tags:
+        - hosts
+    - role: rsyslog
+      tags:
+        - rsyslog

@@ -1,0 +1,42 @@
+---
+- name: Install rsyslog Packages
+  yum:
+    name:
+      - rsyslog-elasticsearch
+      - rsyslog-mmnormalize
+      - rsyslog-elasticsearch
+    state: latest
+  tags:
+    - rsyslog
+    - packages
+
+- name: Allow rsyslog to Send Remote Traffic
+  seport:
+    ports: "{{ elasticsearch_port }}"
+    proto: tcp
+    setype: syslog_tls_port_t
+    state: present
+  tags:
+    - rsyslog
+    - selinux
+
+- name: Copy rsyslog Configuration
+  template:
+    src: templates/elasticsearch.j2
+    dest: /etc/rsyslog.d/elasticsearch.conf
+    owner: root
+    group: root
+    mode: 0640
+    setype: syslog_conf_t
+  tags:
+    - rsyslog
+    - config
+
+- name: Enable/Restart rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
+    enabled: yes
+  tags:
+    - rsyslog
+    - systemd

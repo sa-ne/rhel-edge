@@ -1,0 +1,28 @@
+module(load="omelasticsearch")
+module(load="mmjsonparse")
+module(load="mmutf8fix")
+
+template(name="rsyslogelastic"
+  type="list"
+  option.json="on") {
+    constant(value="{")
+    constant(value="\"timestamp\":\"")     property(name="timereported" dateFormat="rfc3339")
+    constant(value="\",\"message\":\"")    property(name="msg")
+    constant(value="\",\"host\":\"")       property(name="hostname")
+    constant(value="\",\"severity\":\"")   property(name="syslogseverity-text")
+    constant(value="\",\"facility\":\"")   property(name="syslogfacility-text")
+    constant(value="\",\"syslogtag\":\"")  property(name="syslogtag")
+    constant(value="\"}")
+  }
+
+action(type="mmutf8fix")
+action(type="mmjsonparse")
+action(type="omelasticsearch"
+  errorfile="{{ rsyslog_elasticsearch_error_file }}"
+  allowUnsignedCerts="{{ rsyslog_elasticsearch_allow_unsigned_certs }}"
+  server="https://{{ elasticsearch_server }}"
+  serverport="{{ elasticsearch_port }}"
+  uid="{{ elasticsearch_user }}"
+  pwd="{{ elasticsearch_password }}"
+  template="rsyslogelastic"
+  searchIndex="{{ elasticsearch_search_index }}")
