@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: demo
+  name: demo-app-prometheus-monitor
+  namespace: dotnet-app
+spec:
+  endpoints:
+  - interval: 10s
+    port: 8080-tcp
+    scheme: http
+  selector:
+    matchLabels:
+      app: demo
