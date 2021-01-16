@@ -1,0 +1,14 @@
+kind: "Endpoints"
+apiVersion: "v1"
+metadata:
+  name: "ckeller-rhel8-edge-1"
+  namespace: edge-rhel-endpoints
+subsets:
+  -
+    addresses:
+      -
+        ip: "3.238.78.52"
+    ports:
+      -
+        port: 44323
+        name: "metrics"

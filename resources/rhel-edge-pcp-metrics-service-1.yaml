@@ -1,0 +1,17 @@
+kind: "Service"
+apiVersion: "v1"
+metadata:
+  labels:
+    endpoint: edge
+  name: ckeller-rhel8-edge-1
+  namespace: edge-rhel-endpoints
+spec:
+  clusterIP: None
+  ports:
+    -
+      name: "metrics"
+      protocol: "TCP"
+      port: 44323
+      targetPort: 44323
+      nodePort: 0
+selector: {}
