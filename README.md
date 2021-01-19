@@ -78,7 +78,7 @@ Each role is tagged appropriately so feel free to use `--tags` or `--skip-tags` 
 
 # Demo Application
 
-The application is a dotnet core 2.1 that only exposes 3 metrics so prometheus can scrape (`prom_ok`, `prom_warning`, `prom_exception`), it runs using the builder image based on UBI8. To deploy the application manually you can simply run:
+The application is a dotnet core 2.1 that only exposes 3 metrics so prometheus can scrape (`prom_ok`, `prom_warning`, `prom_exception`), it runs using the builder image based on `ubi8`. To deploy the application manually you can simply run:
 
 ```shell
 $ oc new-app dotnet:2.1-ubi8~https://github.com/sa-ne/rhel-edge  --context-dir=app -l app=demo --name=demo
