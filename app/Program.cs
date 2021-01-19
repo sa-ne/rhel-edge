@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 
+
 namespace prometheus_dotnetcore_demo
 {
     class Program
@@ -49,5 +50,15 @@ namespace prometheus_dotnetcore_demo
             var metricServer = new MetricServer(port: 8080);
             metricServer.Start();
         }
+
+        public void ConfigureServices(IServiceCollection services)  
+        {  
+            services.AddHealthChecksUI();  
+        }  
+  
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)  
+        {  
+            app.UseHealthChecksUI();  
+        } 
     }
 }
