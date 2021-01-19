@@ -1,0 +1,40 @@
+---
+- name: Create EC2 Instances
+  ec2_instance:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    region: "{{ instance.aws_region }}"
+    state: present
+    instance_type: "{{ instance.aws_instance_type }}"
+    image_id: "{{ instance.aws_ami_id }}"
+    vpc_subnet_id: "{{ instance.aws_vpc_subnet_id }}"
+    security_group: "{{ instance.aws_security_group_name }}"
+    name: "{{ instance.name }}"
+    network:
+      assign_public_ip: "{{ instance.aws_assign_public_ip }}"
+    wait: yes
+  loop: "{{ aws_instances }}"
+  loop_control:
+    loop_var: instance
+  register: instances
+  when:
+    - aws_instances is defined
+  tags:
+    - aws-instances
+
+- name: Debug instances
+  debug:
+    var: instances
+    verbosity: 1
+  tags:
+    - aws-instances
+
+- name: Wait for Hosts
+  wait_for:
+    host: "{{ instance.instances[0].public_ip_address }}"
+    port: 22
+  loop: "{{ instances.results }}"
+  loop_control:
+    loop_var: instance
+  tags:
+    - aws-instances

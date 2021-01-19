@@ -1,0 +1,13 @@
+---
+- name: Retire AWS Instances
+  ec2_instance:
+    filters:
+      "tag:Name": "{{ instance.name }}"
+    region: "{{ instance.aws_region }}"
+    state: terminated
+    wait: no
+  loop: "{{ aws_instances }}"
+  loop_control:
+    loop_var: instance
+  tags:
+    - aws-instances-retire

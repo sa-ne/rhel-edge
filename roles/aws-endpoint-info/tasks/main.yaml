@@ -1,0 +1,59 @@
+---
+- name: Get EC2 Instance Info
+  ec2_instance_info:
+    region: "{{ instance.aws_region }}"
+    filters:
+      "tag:Name": "{{ instance.name }}"
+      instance-state-name: running
+  register: info_results
+  loop: "{{ aws_instances }}"
+  loop_control:
+    loop_var: instance
+  tags:
+    - aws-endpoint-info
+
+#- name: Debug
+#  debug:
+#    msg: "{{ i.instances[0] }}"
+#    verbosity: 1
+#  loop: "{{ info_results.results }}"
+#  loop_control:
+#    loop_var: i
+#  tags:
+#    - aws-endpoint-info
+
+- name: Combine Name/Public IP for Easy Lookup
+  set_fact:
+    dynamic_instances: >-
+      {{
+        dynamic_instances | default([]) +
+        [
+          {
+            'name': j.instances[0].tags.Name,
+            'ip': j.instances[0].public_ip_address
+          }
+        ]
+      }}
+  loop: "{{ info_results.results }}"
+  loop_control:
+    loop_var: j
+  tags:
+    - aws-endpoint-info
+
+- name: Debug
+  debug:
+    var: dynamic_instances
+    verbosity: 1
+  tags:
+    - aws-endpoint-info
+
+- name: Create Dynamic Inventory
+  add_host:
+    name: "{{ k.name }}"
+    groups: dynamic_inventory
+    ansible_ssh_host: "{{ k.ip }}"
+  loop: "{{ dynamic_instances }}"
+  loop_control:
+    loop_var: k
+  tags:
+    - aws-endpoint-info

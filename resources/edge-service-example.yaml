@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ckeller-rhel8-edge-2
+  namespace: edge-rhel-endpoints
+  labels:
+    endpoint: edge
+spec:
+  clusterIP: None
+  ports:
+    - port: 44323
+      targetPort: 44323

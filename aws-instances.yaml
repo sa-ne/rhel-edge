@@ -1,0 +1,7 @@
+---
+- name: Provision AWS Instances
+  hosts: localhost
+  roles:
+    - role: aws-instances
+      tags:
+        - aws-instances

@@ -1,0 +1,69 @@
+- name: Copy pmcd.options
+  copy:
+    src: files/pmcd.options
+    dest: /etc/pcp/pmcd/pmcd.options
+    owner: root
+    group: root
+    mode: 0644
+    setype: etc_t
+
+- name: Set SELinux to permissive
+  selinux:
+    policy: targeted
+    state: permissive
+
+- name: Install Openmetrics Support
+  shell:
+    cmd: /var/lib/pcp/pmdas/openmetrics/Install
+    chdir: /var/lib/pcp/pmdas/openmetrics
+  register: shell_openmetrics
+  tags:
+    - pcp
+
+- name: Debug
+  debug:
+    msg: "{{ shell_openmetrics.stdout }}"
+    verbosity: 1
+  tags:
+    - pcp
+
+- name: Enable/Restart io.podman
+  systemd:
+    name: io.podman
+    state: restarted
+    enabled: yes
+  tags:
+    - pcp
+
+- name: Install Podman Support
+  shell:
+    cmd: /var/lib/pcp/pmdas/podman/Install
+    chdir: /var/lib/pcp/pmdas/podman
+  register: shell_podman
+  tags:
+    - pcp
+
+- name: Debug
+  debug:
+    msg: "{{ shell_podman.stdout }}"
+    verbosity: 1
+  tags:
+    - pcp
+
+- name: Enable/Restart pmcd
+  systemd:
+    name: pmcd
+    state: restarted
+    enabled: yes
+  tags:
+    - pcp
+    - systemd
+
+- name: Enable/Restart pmproxy
+  systemd:
+    name: pmproxy
+    state: restarted
+    enabled: yes
+  tags:
+    - pcp
+    - systemd
