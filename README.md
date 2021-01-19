@@ -77,3 +77,15 @@ $ ansible-playbook --ask-vault-pass -i local/hosts.yaml -e @local/vault.yaml -u 
 Each role is tagged appropriately so feel free to use `--tags` or `--skip-tags` for the desired effect (see `edge.yaml` for details).
 
 # Demo Application
+
+The application is a dotnet core 2.1 that only exposes 3 metrics so prometheus can scrape (`prom_ok`, `prom_warning`, `prom_exception`), it runs using the builder image based on UBI8. To deploy the application manually you can simply run:
+
+```shell
+$ oc new-app dotnet:2.1-ubi8~https://github.com/sa-ne/rhel-edge  --context-dir=app -l app=demo --name=demo
+```
+
+Then you can expose the service and get an external url:
+
+```shell
+$ oc expose svc/demo
+```
