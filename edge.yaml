@@ -1,11 +1,26 @@
 ---
-- name: RHEL Edge Node Configuration
-  hosts: all
-  become: yes
+- name: Get Endpoints
+  hosts: localhost
   roles:
-    - role: hosts
+    - role: aws-endpoint-info
       tags:
-        - hosts
+        - aws-endpoint-info
+    - role: openshift-edge-endpoints
+      tags:
+        - openshift-edge-endpoints
+
+- name: Configure Endpoints
+  hosts: dynamic_inventory
+  roles:
+    - role: hostname
+      tags:
+        - hostname
     - role: rsyslog
       tags:
         - rsyslog
+    - role: rsyslog
+      tags:
+        - rsyslog
+    - role: pcp
+      tags:
+        - pcp

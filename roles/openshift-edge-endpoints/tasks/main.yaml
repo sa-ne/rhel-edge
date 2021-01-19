@@ -1,0 +1,51 @@
+---
+- name: Add Endpoints
+  k8s:
+    kubeconfig: "{{ ocp_kubeconfig }}"
+    state: present
+    apply: yes
+    definition:
+      apiVersion: v1
+      kind: Endpoints
+      metadata:
+        name: "{{ item }}"
+        namespace: "{{ ocp_rhel_edge_namespace }}"
+      subsets:
+        - addresses:
+            - ip: "{{ hostvars[item].ansible_ssh_host }}"
+          ports:
+            - port: 44323
+              name: metrics
+  loop: "{{ groups['dynamic_inventory'] }}"
+  loop_control:
+    loop_var: item
+  tags:
+    - openshift-edge-endpoints
+
+- name: Add Services
+  k8s:
+    kubeconfig: "{{ ocp_kubeconfig }}"
+    state: present
+    apply: yes
+    definition:
+      kind: Service
+      apiVersion: v1
+      metadata:
+        labels:
+          endpoint: edge
+        name: "{{ item }}"
+        namespace: "{{ ocp_rhel_edge_namespace }}"
+      spec:
+        clusterIP: None
+        ports:
+          - name: metrics
+            protocol: TCP
+            port: 44323
+            targetPort: 44323
+            nodePort: 0
+      selector: {}
+  loop: "{{ groups['dynamic_inventory'] }}"
+  loop_control:
+    loop_var: item
+  tags:
+    - openshift-edge-endpoints

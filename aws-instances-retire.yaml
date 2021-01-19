@@ -1,0 +1,7 @@
+---
+- name: Retire AWS Instances
+  hosts: localhost
+  roles:
+    - role: aws-instances-retire
+      tags:
+        - aws-instances-retire
