@@ -51,16 +51,14 @@ namespace prometheus_dotnetcore_demo
             metricServer.Start();
         }
 
-
         public void ConfigureServices(IServiceCollection services)  
         {  
-            services.AddHealthChecks();  
+            services.AddHealthChecksUI();  
         }  
-        
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)  
+  
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)  
         {  
-            app.UseHealthChecks("/health");  
+            app.UseHealthChecksUI();  
         }  
-
     }
 }
