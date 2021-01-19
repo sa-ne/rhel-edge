@@ -59,6 +59,6 @@ namespace prometheus_dotnetcore_demo
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)  
         {  
             app.UseHealthChecksUI();  
-        } 
+        }  
     }
 }
