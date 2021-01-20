@@ -76,7 +76,7 @@ $ ansible-playbook --ask-vault-pass -i local/hosts.yaml -e @local/vault.yaml -u 
 
 Each role is tagged appropriately so feel free to use `--tags` or `--skip-tags` for the desired effect (see `edge.yaml` for details).
 
-# Demo Application
+# Demo Application 1 (dotnet core 2.1)
 
 The application is a dotnet core 2.1 that only exposes 3 metrics so prometheus can scrape (`prom_ok`, `prom_warning`, `prom_exception`), it runs using the builder image based on `ubi8`. To deploy the application manually you can simply run:
 
@@ -88,4 +88,32 @@ Then you can expose the service and get an external url:
 
 ```shell
 $ oc expose svc/demo
+```
+
+# Demo Application 2 (quarkus with native build)
+
+This demo application is a very simple microservice which offers one REST endpoint that serves for determining whether a number is prime.
+
+In order to build you need to install GraalVM and export the correct environment variables. You can download GraalVM [here](https://github.com/graalvm/graalvm-ce-builds/releases/) or if you running on OSX:
+
+```shell  
+brew install --cask  graalvm/tap/graalvm-ce-java11
+```
+
+Then export the `JAVA_HOME` variable:
+
+```shell
+ export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-ce-java11-20.3.0/Contents/Home
+```
+
+If you are running on OSX you need to remove the quarantine attribute from the bits before you can use them:
+
+```shell
+xattr -r -d com.apple.quarantine /Library/Java/JavaVirtualMachines/graalvm-ce-java11-20.3.0
+```
+
+In order to build the native package, you first need to clone this repository and run withing the `quarkus` directory:
+
+```shell
+mvn package -Pnative -DskipTests -Dquarkus.native.container-runtime=podman
 ```
