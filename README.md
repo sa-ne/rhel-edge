@@ -112,6 +112,14 @@ If you are running on OSX you need to remove the quarantine attribute from the b
 xattr -r -d com.apple.quarantine /Library/Java/JavaVirtualMachines/graalvm-ce-java11-20.3.0
 ```
 
+---
+**NOTE**
+
+If you are running on OSX, you will need a Linux vm/machine configured to your podman client so you can generate the binary.
+
+---
+
+
 In order to build the native package, you first need to clone this repository and run withing the `quarkus` directory:
 
 ```shell
