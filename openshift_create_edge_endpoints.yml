@@ -1,0 +1,6 @@
+---
+- name: Create Edge endpoints on Openshift
+  hosts: all
+  gather_facts: false
+  roles:
+  - openshift-create-edge-endpoints

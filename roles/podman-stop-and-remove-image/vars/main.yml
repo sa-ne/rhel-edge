@@ -1,0 +1,9 @@
+---
+# vars file for podman-stop-and-remove-image
+# Image Vars
+image_namespace: "{{ tower_input_image_namespace | default('quay.io') }}"
+image_name: "{{ tower_input_image_name | default('place-holder') }}"
+image_tag: "{{ tower_input_image_tag | default('latest') }}"
+
+# Container Vars
+container_name: "{{ tower_input_container_name | default('placeholder') }}"

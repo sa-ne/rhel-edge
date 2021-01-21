@@ -1,0 +1,28 @@
+# NAME
+Container Image Registry
+
+# DESCRIPTION
+Credentials to authenticate to a container image registry
+
+# INPUT CONFIGURATION: YAML
+fields:
+  - id: username
+    type: string
+    label: username
+  - id: password
+    type: string
+    label: password
+    secret: true
+  - id: registry
+    type: string
+    label: image registry url
+required:
+  - username
+  - password
+  - registry
+
+# INJECTOR CONFIGURATION:YAML
+extra_vars:
+  tower_secret_image_registry: '{{ registry }}'
+  tower_secret_image_registry_password: '{{ password }}'
+  tower_secret_image_registry_username: '{{ username }}'

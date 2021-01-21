@@ -1,0 +1,50 @@
+---
+# tasks file for openshift-create-edge-endpoints
+- block:
+  - name: Add Endpoints
+    local_action:
+      module: community.kubernetes.k8s
+      state: present
+      apply: yes
+      definition:
+        apiVersion: v1
+        kind: Endpoints
+        metadata:
+          name: "{{ hostvars[item].inventory_hostname }}"
+          namespace: "{{ ocp_rhel_edge_namespace }}"
+        subsets:
+          - addresses:
+              - ip: "{{ hostvars[item].ansible_host }}"
+            ports:
+              - port: 44323
+                name: metrics
+    loop: "{{ groups['all'] }}"
+
+  - name: Add Services
+    local_action:
+      module: community.kubernetes.k8s
+      state: present
+      apply: yes
+      definition:
+        kind: Service
+        apiVersion: v1
+        metadata:
+          labels:
+            endpoint: edge
+          name: "{{ hostvars[item].inventory_hostname }}"
+          namespace: "{{ ocp_rhel_edge_namespace }}"
+        spec:
+          clusterIP: None
+          ports:
+            - name: metrics
+              protocol: TCP
+              port: 44323
+              targetPort: 44323
+              nodePort: 0
+        selector: {}
+    loop: "{{ groups['all'] }}"
+  run_once: True
+  vars:
+    ansible_python_interpreter: /var/lib/awx/venv/ansible/bin/python
+  tags:
+    - openshift-edge-endpoints

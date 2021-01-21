@@ -1,0 +1,6 @@
+---
+- name: Stop A container and remove the image
+  hosts: all
+  gather_facts: false
+  roles:
+  - podman-stop-and-remove-image

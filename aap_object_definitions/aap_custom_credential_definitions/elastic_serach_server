@@ -1,0 +1,38 @@
+# NAME
+Elastic Search Server
+
+# DESCRIPTION
+Elastic Search Server Details
+
+# INPUT CONFIGURATION: YAML
+fields:
+  - id: username
+    type: string
+    label: username
+  - id: password
+    type: string
+    label: password
+    secret: true
+  - id: server
+    type: string
+    label: Elastic Serach Server
+  - id: port
+    type: string
+    label: Port
+  - id: search_index
+    type: string
+    label: Search Index
+required:
+  - username
+  - password
+  - server
+  - port
+  - search_index
+
+# INJECTOR CONFIGURATION:YAML
+extra_vars:
+  elasticsearch_server: '{{ server }}'
+  elasticsearch_password: '{{ password }}'
+  elasticsearch_user: '{{ username }}'
+  elasticsearch_port: '{{ port }}'
+  elasticsearch_search_index: '{{ search_index }}'

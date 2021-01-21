@@ -1,0 +1,48 @@
+---
+# tasks file for openshift-remove-edge-endpoints
+- block:
+  - name: remove services
+    local_action:
+      module: community.kubernetes.k8s
+      state: absent
+      definition:
+        kind: Service
+        apiVersion: v1
+        metadata:
+          labels:
+            endpoint: edge
+          name: "{{ hostvars[item].inventory_hostname }}"
+          namespace: "{{ ocp_rhel_edge_namespace }}"
+        spec:
+          clusterIP: None
+          ports:
+            - name: metrics
+              protocol: TCP
+              port: 44323
+              targetPort: 44323
+              nodePort: 0
+        selector: {}
+    loop: "{{ groups['all'] }}"
+
+  - name: remove Endpoints
+    local_action:
+      module: community.kubernetes.k8s
+      state: absent
+      definition:
+        apiVersion: v1
+        kind: Endpoints
+        metadata:
+          name: "{{ hostvars[item].inventory_hostname }}"
+          namespace: "{{ ocp_rhel_edge_namespace }}"
+        subsets:
+          - addresses:
+              - ip: "{{ hostvars[item].ansible_host }}"
+            ports:
+              - port: 44323
+                name: metrics
+    loop: "{{ groups['all'] }}"
+  run_once: True
+  vars:
+    ansible_python_interpreter: /var/lib/awx/venv/ansible/bin/python
+  tags:
+    - openshift-edge-endpoints
