@@ -1,0 +1,6 @@
+---
+- name: Pull and run a container image with Podman
+  hosts: all
+  gather_facts: false
+  roles:
+  - podman-pull-and-run-image

@@ -1,0 +1,3 @@
+---
+# vars file for openshift-remove-edge-endpoints
+ocp_rhel_edge_namespace: "{{ tower_input_ocp_rhel_edge_namespace | default('edge-rhel-demo') }}"

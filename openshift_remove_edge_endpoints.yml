@@ -1,0 +1,6 @@
+---
+- name: Remove Edge endpoints from Openshift
+  hosts: all
+  gather_facts: false
+  roles:
+  - openshift-remove-edge-endpoints

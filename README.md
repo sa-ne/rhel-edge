@@ -2,79 +2,139 @@
 
 This repository contains a collection of RHEL Edge playbooks and demos. It is currently a work in progress.
 
-# Roles
+# Ansible Playbooks
 
-## hosts
+## `podman_pull_and_run_image.yml`
 
-Configure a basic host file based on a list. Define the variable hostfile in your vault and add name/ip pairs for each host file you want defined.
+### Description 
 
-Example:
+A playbook that will pull down an image from a registry and create a container based on that image.
 
-```yaml
-hostfile:
-  - name: rhel8-edge-1
-    ip: 10.0.133.1
-  - name: rhel8-edge-2
-    ip: 10.0.133.2
-  - name: elasticsearch
-    ip: 10.0.133.3
-```
+## Variables
 
-## rsyslog
+### Image registry vars
+- `image_registry`: String: the URL for the registry to use - can be set through passing in a value for `tower_secret_image_registry` through a Tower survey. 
+- `image_registry_username`: String: The username used to authenticate to the image registry - can be set through passing in a value for `tower_secret_image_registry_username` through a Tower Custom Credential.
+- `image_registry_password`: String: The token used to authenticate to the image registry - can be set through passing in a value for `tower_secret_image_registry_password` through a Tower Custom Credential.
 
-Configure rsyslog to forward logs to an Elasticsearch instance. The following variables (with examples) determine how rsyslog is configured:
+### Image Vars
+- `image_namespace`: String: Namespace of the image in the registry- can be set through passing in a value for `tower_input_image_namespace` through a Tower survey. 
+- `image_name`: String: Name of the image in the registry- can be set through passing in a value for `tower_input_image_name` through a Tower survey. 
+- `image_tag`: String: Tag of the image in the registry- can be set through passing in a value for `tower_input_image_tag` through a Tower survey. 
 
-```yaml
-rsyslog_elasticsearch_error_file: /var/lib/rsyslog/es-errors.log
-rsyslog_elasticsearch_allow_unsigned_certs: "on"
+### Container Vars
+- `container_name`: Name of the container to be created - can be set through passing in a value for `tower_input_container_name` through a Tower survey. 
+- `container_privileged`: weather to run the container in privileged mode - can be set through passing in a value for `tower_input_container_privileged` through a Tower survey. defaults to `false` .
+- `container_restart_policy`: String: the restart policy set to the container - can be set through passing in a value for `tower_input_container_restart_policy` through a Tower survey. defaults to `always`.
 
-elasticsearch_server: elasticsearch
-elasticsearch_port: 31434
-elasticsearch_user: elastic
-elasticsearch_password: password
-elasticsearch_search_index: rsyslog-index
-```
 
-# Running the Edge Playbook
+### Dependancies 
 
-## Clone Repository
+#### Roles 
+- local role: `podman-pull-and-run-image`
+#### collections
+- galaxy: `containers.podman`
 
-Clone this repository as follows:
 
-```shell
-$ git clone https://github.com/sa-ne/rhel-edge.git
-```
+## `podman_stop_and_remove_image.yml`
 
-## Create an Inventory File of Edge Systems
+### Description 
 
-First we need to create an inventory file (in this example at the root of the repository in `local/hosts.yaml`). An example is provided below:
+A playbook that will stop a running container based on its name, and remove the image from the system.
 
-```yaml
-all:
-  hosts:
-    rhel8-edge-1:
-      ansible_host: 10.0.133.1
-    rhel8-edge-2:
-      ansible_host: 10.0.133.2
-```
+## Variables
 
-## Create a Vault
+### Image Vars
+- `image_namespace`: String: Namespace of the image in the registry- can be set through passing in a value for `tower_input_image_namespace` through a Tower survey. 
+- `image_name`: String: Name of the image in the registry- can be set through passing in a value for `tower_input_image_name` through a Tower survey. 
+- `image_tag`: String: Tag of the image in the registry- can be set through passing in a value for `tower_input_image_tag` through a Tower survey. 
 
-Create a vault (in this example at the root of the repository in `local/vault.yaml`) with the necessary to run each role.
+### Container Vars
+- `container_name`: Name of the container to be removed - can be set through passing in a value for `tower_input_container_name` through a Tower survey. 
 
-```shell
-$ ansible-vault create local/vault.yaml
-```
 
-## Running the Edge Playbook
+### Dependancies 
 
-Run the playbook as follows:
+#### Roles 
+- local role: `podman-stop-and-remove-image`
+#### collections
+- galaxy: `containers.podman`
 
-```shell
-$ ansible-playbook --ask-vault-pass -i local/hosts.yaml -e @local/vault.yaml -u root edge.yaml
-```
 
-Each role is tagged appropriately so feel free to use `--tags` or `--skip-tags` for the desired effect (see `edge.yaml` for details).
+
+
+
+## `edge_configure_nodes.yml`
+
+### Description 
+
+A playbook that will call a series of roles to configure a RHEL Edge system for this demo. 
+- role `hostname` will configure a basic host file on each system.
+- role `rsyslog` will configure rsyslog to forward logs to an Elasticsearch instance. 
+- role `pcp` will install and configure openmetrics support.
+
+## Variables
+
+### Image Vars
+- `rsyslog_elasticsearch_error_file`: The path for the error file to use
+- `rsyslog_elasticsearch_allow_unsigned_certs`: Allow unsigned certificates
+
+- `elasticsearch_server`: URL for the elastic search server - can be set through a Tower Custom Credential.
+- `elasticsearch_port`: Port for the elastic search server - can be set through a Tower Custom Credential.
+- `elasticsearch_user`: username for the elastic search server - can be set through a Tower Custom Credential.
+- `elasticsearch_password`: password for the elastic search server - can be set through a Tower Custom Credential.
+- `elasticsearch_search_index`: name of the search index for the elastic search server - can be set through a Tower Custom Credential.
+
+
+### Dependancies 
+
+#### Roles 
+- local role: `hostname`
+- local role: `rsyslog`
+- local role: `pcp`
+
+
+
+## `openshift-create-edge-endpoints.yml`
+
+### Description 
+
+A playbook that will create edge endpoints and corresponding services in a given namespace on openshift for the nodes in the inventory it is run against. 
+
+The playbook uses the `kubeconfig` custom credential in Tower for authentication.
+
+## Variables
+
+- `ocp_rhel_edge_namespace`: Name of the OpenShift namespace to create endpoints and services in - can be set through passing in a value for `tower_input_ocp_rhel_edge_namespace` through a Tower survey.  
+
+### Dependancies 
+
+#### Roles 
+- local role: `openshift-create-edge-endpoints`
+#### collections
+- galaxy: `community.kubernetes`
+
+
+## `openshift-remove-edge-endpoints.yml`
+
+### Description 
+
+A playbook that will remove edge endpoints and corresponding services in a given namespace on openshift for the nodes in the inventory it is run against. 
+
+The playbook uses the `kubeconfig` custom credential in Tower for authentication.
+
+## Variables
+
+- `ocp_rhel_edge_namespace`: Name of the OpenShift namespace to remove endpoints and services from - can be set through passing in a value for `tower_input_ocp_rhel_edge_namespace` through a Tower survey.  
+
+### Dependancies 
+
+#### Roles 
+- local role: `openshift-remove-edge-endpoints`
+#### collections
+- galaxy: `community.kubernetes`
+
+
 
 # Demo Application 1 (dotnet core 2.1)
 
