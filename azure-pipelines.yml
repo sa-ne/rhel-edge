@@ -27,7 +27,7 @@ steps:
   inputs:
     connectionType: 'OpenShift Connection Service'
     openshiftService: 'openshift-user'
-    cmd: 'oc new-app dotnet:2.1-ubi8~https://github.com/sa-ne/rhel-edge  --context-dir=app -l app=demo --name=demo'
+    cmd: 'oc new-app dotnet:2.1-ubi8~https://github.com/sa-ne/rhel-edge  --context-dir=app -l app=demo --name=demo -n dotnet=app'
     ignoreFlag: true
 - task: oc-cmd@2
   inputs:
