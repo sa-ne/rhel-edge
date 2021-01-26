@@ -21,7 +21,7 @@ steps:
   inputs:
     connectionType: 'OpenShift Connection Service'
     openshiftService: 'openshift-user'
-    cmd: 'oc delete all --all -n'
+    cmd: 'oc delete all --all -n dotnet-app'
     ignoreFlag: true
 - task: oc-cmd@2
   inputs:
