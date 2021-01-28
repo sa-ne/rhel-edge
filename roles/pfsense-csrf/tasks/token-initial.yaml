@@ -1,0 +1,78 @@
+- name: Query pfSense for Initial CSRF Token
+  uri:
+    method: GET
+    return_content: yes
+    status_code: [200, 302]
+    url: "https://{{ pfsense_hostname }}"
+  register: pfsense_content
+
+- name: Debug pfsense_content
+  debug:
+    var: pfsense_content
+    verbosity: 2
+
+- name: Set Initial CSRF Token
+  set_fact:
+    csrf_magic: "{{ pfsense_content.content | regex_search(csrf_pattern, '\\1', multiline=True) | first }}"
+
+- name: Debug CSRF Token 
+  debug:
+    var: csrf_magic
+    verbosity: 1
+
+- name: Set Payload for Login
+  set_fact:
+    body: >-
+      {{
+        [
+          [ "__csrf_magic",  csrf_magic ],
+          [ "usernamefld", pfsense_username ],
+          [ "passwordfld", pfsense_password ],
+          [ "login", "Sign In"]
+        ]
+      }}
+
+- name: Login to pfSense
+  uri:
+    body_format: form-urlencoded
+    body: "{{ body }}"
+    headers:
+      Cookie: "{{ pfsense_content.cookies_string }}"
+    method: POST
+    return_content: yes
+    status_code: [200, 302]
+    url: "https://{{ pfsense_hostname }}"
+  register: pfsense_content
+
+- name: Debug pfsense_content
+  debug:
+    var: pfsense_content
+    verbosity: 2
+
+- name: Grab Updated CSRF Token
+  uri:
+    headers:
+      Cookie: "{{ pfsense_content.set_cookie }}"
+    method: GET
+    return_content: yes
+    status_code: [200, 302]
+    url: "https://{{ pfsense_hostname }}"
+  register: pfsense_content
+
+- name: Debug pfsense_content
+  debug:
+    var: pfsense_content
+    verbosity: 2
+
+- name: Set Updated CSRF Token
+  set_fact:
+    csrf_magic: "{{ pfsense_content.content | regex_search(csrf_pattern, '\\1', multiline=True) | first }}"
+
+- name: Debug CSRF Token 
+  debug:
+    var: csrf_magic
+    verbosity: 1
+
+- name: Update csrf_initial
+  set_fact:
+    csrf_initial: false

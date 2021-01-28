@@ -1,0 +1,103 @@
+- name: Create VMs
+  vmware_guest:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    validate_certs: no
+    cluster: "{{ vcenter_cluster }}"
+    datacenter: "{{ vcenter_datacenter }}"
+    datastore: "{{ hostvars[item].datastore }}"
+    disk: "{{ hostvars[item].disk | default([]) | list }}"
+    folder: "/{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
+    guest_id: rhel8_64Guest
+    hardware:
+      memory_mb: "{{ hostvars[item].memory }}"
+      num_cpus: "{{ hostvars[item].cores }}"
+      num_cpu_cores_per_socket: "{{ hostvars[item].cores }}"
+      boot_firmware: efi
+    networks:
+      - name: "{{ vcenter_network }}"
+        start_connected: yes
+    cdrom:
+      - controller_number: 0
+        unit_number: 0
+        state: present
+        type: iso
+        iso_path: "[{{ vcenter_iso_datastore }}] {{ vcenter_iso_name }}"
+    name: "{{ item }}.{{ base_domain }}"
+    state: present
+  register: vmware_guest_results
+  with_items:
+    - "{{ groups[provision_group] }}"
+
+- name: Get VM Facts
+  vmware_guest_info:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    validate_certs: no
+    datacenter: "{{ vcenter_datacenter }}"
+    name: "{{ item }}.{{ base_domain }}"
+  register: vmware_guest_info_results
+  with_items:
+    - "{{ groups[provision_group] }}"
+
+- name: Combine Applicable Disks & Hostnames into Dictionary for Easy Lookup
+  set_fact:
+    disk_name_dict: >-
+      {{
+        disk_name_dict | default([]) +
+        [
+          {
+            'name': item,
+            'disks': hostvars[item].disks | default([])
+          }
+        ]
+      }}
+  tags:
+    - disks
+  with_items:
+    - "{{ groups[provision_group] }}"
+
+- name: Add Disks to VMs
+  vmware_guest_disk:
+    datacenter: "{{ vcenter_datacenter }}"
+    disk:
+      - size_gb: "{{ item.1.size_gb }}"
+        type: thin
+        datastore: "{{ item.1.datastore }}"
+        scsi_controller: "{{ item.1.scsi_controller }}"
+        state: present
+        unit_number: "{{ item.1.unit_number }}"
+    folder: "/{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
+    hostname: "{{ vcenter_hostname }}"
+    name: "{{ item.0.name }}.{{ base_domain }}"
+    password: "{{ vcenter_password }}"
+    username: "{{ vcenter_username }}"
+    validate_certs: no
+  with_subelements:
+    - "{{ disk_name_dict }}"
+    - disks
+    - skip_missing: False
+
+- name: Combine Hostname/IP/MAC into Dictionary for Easy Lookup
+  set_fact:
+    host_mac_list: >-
+      {{
+        host_mac_list | default([]) +
+        [
+          {
+            'name': item.item,
+            'mac': item.instance.hw_eth0.macaddress,
+            'ip': hostvars[item.item]['ip'],
+            'dns': hostvars[item.item]['dns'],
+            'gateway': hostvars[item.item]['gateway']
+          }
+        ]
+      }}
+  with_items:
+    - "{{ vmware_guest_info_results.results }}"
+
+- name: Debug host_mac_list
+  debug:
+    var: host_mac_list

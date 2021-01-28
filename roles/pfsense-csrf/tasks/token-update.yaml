@@ -1,0 +1,23 @@
+- name: Query pfSense for CSRF Token
+  uri:
+    headers:
+      Cookie: "{{ pfsense_content.set_cookie }}"
+    method: GET
+    return_content: yes
+    status_code: [200, 302]
+    url: "https://{{ pfsense_hostname }}/{{ csrf_uri }}"
+  register: pfsense_content
+
+- name: Debug pfsense_content
+  debug:
+    var: pfsense_content
+    verbosity: 2
+
+- name: Set Updated CSRF Token
+  set_fact:
+    csrf_magic: "{{ pfsense_content.content | regex_search(csrf_pattern, '\\1', multiline=True) | first }}"
+
+- name: Debug CSRF Token 
+  debug:
+    var: csrf_magic
+    verbosity: 1
