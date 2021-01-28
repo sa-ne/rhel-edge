@@ -3,15 +3,6 @@
   hosts: all
   gather_facts: false
   roles:
-    - role: hostname
-      tags:
-        - hostname
     - role: rsyslog
       tags:
         - rsyslog
-    - role: rsyslog
-      tags:
-        - rsyslog
-    - role: pcp
-      tags:
-        - pcp

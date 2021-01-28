@@ -1,0 +1,4 @@
+- name: Deploy PCP Container on RHEL Edge Nodes
+  hosts: pg
+  roles:
+    - name: pcp

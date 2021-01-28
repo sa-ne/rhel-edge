@@ -1,0 +1,4 @@
+- name: Configure rsyslog
+  hosts: pg
+  roles:
+    - name: rsyslog

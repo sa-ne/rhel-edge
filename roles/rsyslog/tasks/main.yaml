@@ -1,15 +1,4 @@
 ---
-- name: Install rsyslog Packages
-  yum:
-    name:
-      - rsyslog-elasticsearch
-      - rsyslog-mmnormalize
-      - rsyslog-elasticsearch
-    state: latest
-  tags:
-    - rsyslog
-    - packages
-
 - name: Allow rsyslog to Send Remote Traffic
   seport:
     ports: "{{ elasticsearch_port }}"
