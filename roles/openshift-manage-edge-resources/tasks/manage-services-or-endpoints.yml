@@ -1,0 +1,13 @@
+- block:
+  - name: Manage {{ resource_type }} resources to make sure they are {{ resource_state }}
+    local_action:
+      module: community.kubernetes.k8s
+      state: "{{ resource_state }}"
+      template: "{{ resource_type }}.yml.j2"
+    loop: "{{ groups['all'] }}"
+  run_once: True
+  # TODO: Workaround to avoid building a new image for tower on OCP
+  vars:
+    ansible_python_interpreter: /var/lib/awx/venv/ansible/bin/python
+  tags:
+    - openshift-edge-endpoints

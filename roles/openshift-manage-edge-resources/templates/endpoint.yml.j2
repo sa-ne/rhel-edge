@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ hostvars[item].inventory_hostname }}
+  namespace: {{ ocp_namespace }}
+subsets:
+  - addresses:
+      - ip: {{ hostvars[item].ansible_host }}
+    ports:
+      - port: {{ resource_port }}
+        name: metrics

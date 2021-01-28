@@ -1,0 +1,16 @@
+- name: read object definition file
+  slurp:
+    src: "{{ item }}"
+  register: file_contents
+  
+- set_fact:
+    yaml_file_contents: "{{ file_contents['content'] | b64decode | from_yaml_all | list}}"  
+
+- debug:
+    var: yaml_file_contents
+
+- name: Create the {{ yaml_file_contents[0]['kind'] }} defined in {{ item }}
+  community.kubernetes.k8s:
+    state: present
+    apply: yes
+    definition: "{{ lookup('file', item) | from_yaml }}"

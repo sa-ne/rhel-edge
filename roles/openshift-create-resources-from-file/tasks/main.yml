@@ -1,0 +1,6 @@
+---
+# tasks file for openshift-create-resources
+- name: Loop over files, parse each and create objects
+  include_tasks: parse_and_create_object.yml
+  loop: "{{ object_definition_files }}"
+

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    endpoint: edge
+  name: {{ hostvars[item].inventory_hostname }}
+  namespace: {{ ocp_namespace }}
+spec:
+  clusterIP: None
+  ports:
+    - name: metrics
+      protocol: TCP
+      port: {{ resource_port }}
+      targetPort: {{ resource_port }}
+      nodePort: 0
+selector: {}
