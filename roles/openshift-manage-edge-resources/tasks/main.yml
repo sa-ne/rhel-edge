@@ -1,0 +1,10 @@
+---
+# tasks file for openshift-manage-edge-resources
+- name: Manage all {{ resource_type }} resources to make sure they are {{ resource_state }}
+  include_tasks: manage-service-monitor.yml
+  when: resource_type == 'service-monitor'
+
+- name: Manage all {{ resource_type }} resources to make sure they are {{ resource_state }}
+  include_tasks: manage-services-or-endpoints.yml
+  when: resource_type != 'service-monitor'
+
