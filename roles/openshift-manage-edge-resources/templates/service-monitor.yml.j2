@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    endpoint: edge
+  name: {{ resource_name }}
+  namespace: {{ ocp_namespace }}
+spec:
+  endpoints:
+  - interval: 10s
+    port: metrics
+    scheme: http
+  selector:
+    matchLabels:
+      endpoint: edge
