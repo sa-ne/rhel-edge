@@ -6,3 +6,6 @@
     - role: rsyslog
       tags:
         - rsyslog
+    - role: pcp
+      tags:
+        - pcp

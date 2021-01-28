@@ -6,7 +6,7 @@
 
 - name: Pull PCP Container
   containers.podman.podman_image:
-    name: registry.redhat.io/rhel8/pcp
+    name: "{{ image_registry }}/{{ image_namespace }}/{{ image_name }}"
     pull: true
     state: present
     username: "{{ image_registry_username }}"
