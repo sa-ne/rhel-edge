@@ -2,7 +2,7 @@
 # tasks file for edge-configure-vip
   - set_fact:
       int_ip: "{{ hostvars[item].ansible_host }}/24"
-    when: add_vip
+    when: not add_vip
   
   - set_fact:
       int_ip: "{{ hostvars[item].vip }}/24"
