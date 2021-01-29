@@ -5,7 +5,7 @@
   
   - set_fact:
       int_ip: "{{ vip }}/24"
-    when: add_vip
+    when: add_vip | bool
   
 
 
