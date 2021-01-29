@@ -1,0 +1,6 @@
+---
+- name: Configure VIP on edge nodes
+  hosts: all
+  gather_facts: false
+  roles:
+  - edge-configure-vip
