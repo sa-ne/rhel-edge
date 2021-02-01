@@ -4,7 +4,7 @@
       module: community.kubernetes.k8s
       state: "{{ resource_state }}"
       template: "{{ resource_type }}.yml.j2"
-    loop: "{{ groups['all'] }}"
+    loop: "{{ ansible_play_hosts }}"
   run_once: True
   # TODO: Workaround to avoid building a new image for tower on OCP
   vars:
