@@ -2,9 +2,6 @@ trigger:
  branches:
    include:
      - master
-jobs:
-- job: string
-  pool: server
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -38,10 +35,4 @@ steps:
     openshiftService: 'openshift-user'
     cmd: 'oc create -f ${SYSTEM_DEFAULTWORKINGDIRECTORY}/resources/demo-app-service-monitor.yaml'
     ignoreFlag: true
-- task: InvokeRESTAPI@1
-  inputs:
-    connectionType: 'connectedServiceName'
-    serviceConnection: 'tower-connection'
-    method: 'POST'
-    urlSuffix: '18/launch/'
-    waitForCompletion: 'false'
+
