@@ -5,7 +5,8 @@ metadata:
   namespace: {{ ocp_namespace }}
 subsets:
   - addresses:
-      - ip: {% hostvars[item].vip if (use_vip) else hostvars[item].ansible_host %}
+  {% set endpoint_ip = hostvars[item].vip if (use_vip) else hostvars[item].ansible_host %}
+      - ip: {{ endpoint_ip }}
     ports:
       - port: {{ resource_port }}
         name: metrics
