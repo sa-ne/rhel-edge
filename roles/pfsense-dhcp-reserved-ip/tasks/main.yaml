@@ -1,0 +1,85 @@
+- name: Grab CSRF Token
+  include_role:
+    name: pfsense-csrf
+  vars:
+    csrf_uri: ""
+
+- name: Set Payload for DHCP Reservation
+  set_fact:
+    body: >-
+      {{
+        [
+          [ "__csrf_magic",  csrf_magic ],
+          [ "mac", pd_mac | default("") ],
+          [ "cid", pd_cid | default("") ],
+          [ "ipaddr", pd_ipaddr | default("") ],
+          [ "hostname", pd_hostname | default("") ],
+          [ "filename", pd_filename | default("") ],
+          [ "rootpath", pd_rootpath | default("") ],
+          [ "descr", pd_desc | default("") ],
+          [ "wins1", pd_wins1 | default("") ],
+          [ "wins2", pd_wins2 | default("") ],
+          [ "dns1", pd_dns1 | default("") ],
+          [ "dns2", pd_dns2 | default("") ],
+          [ "dns3", pd_dns3 | default("") ],
+          [ "dns4", pd_dns4 | default("") ],
+          [ "gateway", pd_gateway | default("") ],
+          [ "domainsearchlist", pd_domainsearchlist | default("") ],
+          [ "deftime", pd_deftime | default("") ],
+          [ "maxtime", pd_maxtime | default("") ],
+          [ "ddnsdomain", pd_ddnsdomain | default("") ],
+          [ "ddnsdomainprimary", pd_ddnsdomainprimary | default("") ],
+          [ "ddnsdomainkeyname", pd_ddnsdomainkeyname | default("") ],
+          [ "ddnsdomainkey", pd_ddnsdomainkey | default("") ],
+          [ "ntp1", pd_ntp1 | default("") ],
+          [ "ntp2", pd_ntp2 | default("") ],
+          [ "tftp", pd_tftp | default("") ],
+          [ "save", "Save"],
+        ]
+      }}
+
+- name: Update DHCP Record
+  uri:
+    body_format: form-urlencoded
+    body: "{{ body }}"
+    headers:
+      Cookie: "{{ pfsense_content.cookies_string }}"
+    method: POST
+    return_content: yes
+    status_code: [200, 302]
+    url: "https://{{ pfsense_hostname }}/services_dhcp_edit.php?if={{ pfsense_interface }}"
+  register: pfsense_content
+
+- name: Grab CSRF Token
+  include_role:
+    name: pfsense-csrf
+  vars:
+    csrf_uri: "/services_dhcp_edit.php?if={{ pfsense_interface }}"
+
+- name: Set Payload
+  set_fact:
+    body: >-
+      {{
+        [
+          ["__csrf_magic",  csrf_magic],
+          ["apply", "Apply Changes"]
+        ]
+      }}
+
+- name: Update DHCP Record
+  uri:
+    body_format: form-urlencoded
+    body: "{{ body }}"
+    headers:
+      Cookie: "{{ pfsense_content.cookies_string }}"
+    method: POST
+    return_content: yes
+    status_code: [200, 302]
+    url: "https://{{ pfsense_hostname }}/services_dhcp.php?if={{ pfsense_interface }}"
+  register: pfsense_content
+
+- name: Grab CSRF Token
+  include_role:
+    name: pfsense-csrf
+  vars:
+    csrf_uri: "/services_dhcp.php?if={{ pfsense_interface }}"

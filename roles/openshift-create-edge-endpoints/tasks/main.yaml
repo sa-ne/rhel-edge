@@ -18,6 +18,7 @@
             ports:
               - port: 44323
                 name: metrics
+                protocol: TCP
     loop: "{{ groups['all'] }}"
 
   - name: Add Services

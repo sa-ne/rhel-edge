@@ -1,0 +1,8 @@
+---
+# vars file for openshift-manage-edge-resources
+resource_name: "{{ tower_input_resource_name | default('rhel-edge-demo') }}"
+resource_type: "{{ tower_input_resource_type | default('service-monitor') }}"
+resource_state: "{{ 'present' if (tower_input_resource_state is defined and tower_input_resource_state == 'create') else 'absent' }}"
+resource_port: "{{ tower_input_resource_port | default(8080) }}"
+ocp_namespace: "{{ tower_input_ocp_namespace | default('rhel-edge-demo') }}"
+use_vip: "{{ tower_input_use_vip | default(false) }}"

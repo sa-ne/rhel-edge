@@ -1,0 +1,19 @@
+[Unit]
+Description=Podman container-pcp.service
+Documentation=man:podman-generate-systemd(1)
+Wants=network.target
+After=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+ExecStartPre=/bin/rm -f %t/container-pcp.pid %t/container-pcp.ctr-id
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-pcp.pid --cidfile %t/container-pcp.ctr-id --cgroups=no-conmon --replace -d --name pcp --privileged --net host --systemd always -e HOST_MOUNT=/host -v pcp-archives:/var/log/pcp/pmlogger -v /:/host:ro,rslave registry.redhat.io/rhel8/pcp
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-pcp.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-pcp.ctr-id
+PIDFile=%t/container-pcp.pid
+KillMode=none
+Type=forking
+
+[Install]
+WantedBy=multi-user.target default.target

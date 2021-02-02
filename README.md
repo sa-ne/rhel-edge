@@ -93,9 +93,35 @@ A playbook that will call a series of roles to configure a RHEL Edge system for 
 - local role: `rsyslog`
 - local role: `pcp`
 
+## `openshift-manage-edge-resources.yml`
+
+### Description 
+
+A playbook that will manage all the metrics resources (endpoints, services and service-monitors) in a given namespace on openshift for the nodes in the inventory it is run against. Playbook is able to handle both creating and deleting resources. 
+
+The playbook uses the `kubeconfig` custom credential in Tower for authentication.
+
+## Variables
+
+- `ocp_namespace`: Name of the OpenShift namespace to create or delete resources in - can be set through passing in a value for `tower_input_ocp_namespace` through a Tower survey. 
+
+- `resource_name`: Name of the service-monitor to create or delete - can be set through passing in a value for `tower_input_resource_name` through a Tower survey. 
+
+- `resource_type`: Type of resource to create or delete. options are `service`, `endpoint` or `service-monitor` - can be set through passing in a value for `tower_input_resource_type` through a Tower survey. 
+
+- `resource_state`: weather to create or delete. options are `present` or `absent` - can be set through passing in a value of `create` or `delete` for `tower_input_resource_state` through a Tower survey. 
+
+- `resource_port`: port to use for services and endpoints - can be set through passing in a value for `tower_input_resource_port` through a Tower survey. 
+
+### Dependancies 
+
+#### Roles 
+- local role: `openshift-remove-edge-endpoints`
+#### collections
+- galaxy: `community.kubernetes`
 
 
-## `openshift-create-edge-endpoints.yml`
+## UNUSED: `openshift-create-edge-endpoints.yml`
 
 ### Description 
 
@@ -115,7 +141,7 @@ The playbook uses the `kubeconfig` custom credential in Tower for authentication
 - galaxy: `community.kubernetes`
 
 
-## `openshift-remove-edge-endpoints.yml`
+## UNUSED: `openshift-remove-edge-endpoints.yml`
 
 ### Description 
 

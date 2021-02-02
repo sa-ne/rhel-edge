@@ -1,0 +1,2 @@
+csrf_pattern: ".*name=.__csrf_magic..value=\"(.*)\".*"
+csrf_initial: true

@@ -1,0 +1,65 @@
+- name: Provision VMware Instances
+  hosts: localhost
+  tasks:
+    - name: Create VMware Instances
+      include_role:
+        name: vmware-instances
+
+    - name: Update pfSense DHCP Reservations
+      include_role:
+        name: pfsense-dhcp-reserved-ip
+      vars:
+        pd_mac: "{{ item.mac }}"
+        pd_cid: "{{ item.name }}"
+        pd_ipaddr: "{{ item.ip }}"
+        pd_hostname: "{{ item.name }}"
+        pd_dns1: "{{ item.dns }}"
+        pd_gateway: "{{ item.gateway }}"
+      loop: "{{ host_mac_list }}"
+
+    - name: Generate IPA Session Cookie
+      uri:
+        url: "https://{{ ipa_hostname }}/ipa/session/login_password"
+        validate_certs: no
+        method: POST
+        status_code: 200
+        headers:
+          Content-Type: "application/x-www-form-urlencoded"
+          Accept: "text/plain"
+          Referer: "https://{{ ipa_hostname }}/ipa"
+        body: "user={{ ipa_username }}&password={{ ipa_password }}"
+      register: ipa_session
+
+    - name: Create A/PTR Records
+      uri:
+        url: "https://{{ ipa_hostname }}/ipa/session/json"
+        validate_certs: no
+        method: POST
+        status_code: 200
+        headers:
+          Cookie: "{{ ipa_session.set_cookie }}"
+          Accept: "application/json"
+          Referer: "https://{{ ipa_hostname }}/ipa"
+        body:
+          method: dnsrecord_add
+          params:
+          - - "{{ base_domain }}."
+            - "{{ item }}"
+          - a_part_ip_address: "{{ hostvars[item].ip }}"
+            a_extra_create_reverse: true
+        body_format: json
+      with_items:
+        - "{{ groups[provision_group] }}"
+
+    - name: Start VMware Instances
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        cluster: "{{ vcenter_cluster }}"
+        datacenter: "{{ vcenter_datacenter }}"
+        name: "{{ item }}.{{ base_domain }}"
+        state: poweredon
+      with_items:
+        - "{{ groups[provision_group] }}"

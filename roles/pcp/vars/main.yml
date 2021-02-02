@@ -1,0 +1,5 @@
+---
+# Image registry_vars
+image_registry: "{{ tower_secret_image_registry | default('quay.io') }}"
+image_registry_username: "{{ tower_secret_image_registry_username | default('admin') }}"
+image_registry_password: "{{ tower_secret_image_registry_password }}"

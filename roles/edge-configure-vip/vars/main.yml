@@ -1,0 +1,4 @@
+---
+# vars file for edge-configure-vip
+add_vip: "{{ tower_input_add_vip | default(true) }}"
+interface_name: "{{ tower_input_interface_name | default('ens192') }}"

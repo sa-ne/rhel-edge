@@ -1,0 +1,6 @@
+---
+- name: Manage resources on OpenShift
+  hosts: all
+  gather_facts: false
+  roles:
+  - openshift-manage-edge-resources

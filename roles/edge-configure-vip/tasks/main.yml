@@ -1,0 +1,20 @@
+---
+# tasks file for edge-configure-vip
+  - set_fact:
+      int_ip: "{{ ansible_host }}/24"
+  
+  - set_fact:
+      int_ip: "{{ vip }}/24"
+    when: add_vip | bool
+  
+
+
+  - name: Add an Ethernet connection with static IP configuration
+    nmcli:
+      conn_name: "{{ interface_name }}"
+      ifname: "{{ interface_name }}"
+      ip4: "{{ int_ip }}"
+      type: ethernet
+      state: present
+  
+  - shell: nmcli con up {{ interface_name }}
