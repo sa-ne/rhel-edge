@@ -1,0 +1,218 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "Prometheus",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "limit": 100,
+        "name": "Annotations & Alerts",
+        "showIn": 0,
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 6,
+  "iteration": 1611765479564,
+  "links": [],
+  "panels": [
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "items": [
+          [
+            {
+              "active": true,
+              "name": "Overview",
+              "title": "PCP Vector Checklist",
+              "uid": "pcp-vector-checklist"
+            }
+          ],
+          [
+            {
+              "name": "Memory",
+              "title": "PCP Vector Checklist: Memory",
+              "uid": "pcp-vector-checklist-memory"
+            },
+            {
+              "name": "Storage",
+              "title": "PCP Vector Checklist: Storage",
+              "uid": "pcp-vector-checklist-storage"
+            },
+            {
+              "name": "Network",
+              "title": "PCP Vector Checklist: Network",
+              "uid": "pcp-vector-checklist-network"
+            },
+            {
+              "active": true,
+              "name": "CPU",
+              "title": "PCP Vector Checklist: CPU",
+              "uid": "pcp-vector-checklist-cpu"
+            }
+          ],
+          [
+            {
+              "name": "System CPU",
+              "title": "PCP Vector Checklist: System CPU",
+              "uid": "pcp-vector-checklist-cpu-sys"
+            },
+            {
+              "active": true,
+              "current": true,
+              "name": "User CPU",
+              "title": "PCP Vector Checklist: User CPU",
+              "uid": "pcp-vector-checklist-cpu-user"
+            }
+          ]
+        ],
+        "scripted": true
+      },
+      "title": "",
+      "type": "pcp-breadcrumbs-panel"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 2
+      },
+      "id": 3,
+      "options": {
+        "graph": {
+          "isStacked": false,
+          "lineWidth": 1,
+          "nullValue": "null",
+          "showBars": false,
+          "showLines": true,
+          "showPoints": false
+        },
+        "legend": {
+          "displayMode": "list",
+          "isLegendVisible": true,
+          "placement": "under"
+        },
+        "meta": {
+          "children": [],
+          "derived": [],
+          "issues": [
+            "The hotproc.control.config does not have default setting and need to be root to set it. Can set it with: <code>sudo pmstore hotproc.control.config 'cpuburn > 0.05'</code>"
+          ],
+          "metrics": [
+            {
+              "name": "hotproc.psinfo.utime",
+              "title": "time (in ms) spent executing user code since process started"
+            }
+          ],
+          "name": "CPU - Intensive tasks in user-space",
+          "parents": [
+            {
+              "name": "CPU",
+              "parents": [
+                "pcp-vector-checklist"
+              ],
+              "title": "PCP Vector Checklist: CPU",
+              "uid": "pcp-vector-checklist-cpu"
+            }
+          ],
+          "urls": [
+            "https://access.redhat.com/articles/781993"
+          ]
+        },
+        "scripted": true
+      },
+      "targets": [
+        {
+          "expr": "hotproc_psinfo_utime",
+          "format": "time_series",
+          "interval": "",
+          "legendFormat": "{{hostname}} - {{instname}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Intensive tasks in user-space [%]",
+      "type": "pcp-notifygraph-panel"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "pcp-vector",
+    "pcp-checklist"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "PCP Vector Checklist: User CPU",
+  "uid": "pcp-vector-checklist-cpu-user",
+  "version": 4
+}

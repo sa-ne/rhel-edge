@@ -185,3 +185,18 @@ In order to build the native package, you first need to clone this repository an
 ```shell
 mvn package -Pnative -DskipTests -Dquarkus.native.container-runtime=podman
 ```
+
+# Configuring Grafana
+
+We will have grafana showing some metric information from the edge nodes that are publishing using the user-workload prometheus instance on OpenShift. For our custom
+Grafana instance we will need to grant the `cluster-monitoring-view` cluster role to the `grafana-serviceaccount`:
+
+```shell
+oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-serviceaccount
+```
+
+We need a bearer token from this service account to authenticate access to prometheus (configuration inside the prometheus-grafanadatasource.yaml file):
+
+```shell 
+oc serviceaccounts get-token grafana-serviceaccount -n ${PROJECT_NAME}
+```

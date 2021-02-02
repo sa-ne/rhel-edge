@@ -7,7 +7,7 @@ subsets:
   -
     addresses:
       -
-        ip: "${EXTERNAL-IP}"
+        ip: "${IP-ADDRESS}"
     ports:
       -
         port: 44323
