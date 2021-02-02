@@ -226,3 +226,9 @@ We need a bearer token from this service account to authenticate access to prome
 ```shell 
 oc serviceaccounts get-token grafana-serviceaccount -n ${PROJECT_NAME}
 ```
+
+### PCP Metrics Grafana Dashboard
+![PCP Metrics](/images/pcp-metrics.png)
+
+### Application Custom Metrics
+![Application Metrics](/images/app-metrics.png)
