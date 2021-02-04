@@ -58,3 +58,9 @@ To actually deploy it you need to have `oc` client installed and configured, als
 ```
 The attribute `-Dquarkus.kubernetes-client.trust-certs=true` is only to skip the self-signed certs if you are using them.
 
+You also has the option to import the grafana dashboard that will show some of the custom metrics exposed by the application, which can be checked by the `/metrics` endpoint.
+
+To import the dashboard just copy the content of the `quarkus-app-grafana-dashboard.json` into Grafana when importing a dashboard, also make sure to have the Datasource created (see `rhel-edge/resources/prometheus-grafanadatasource.yaml`)
+
+### Quarkus Metrics Grafana Dashboard
+![Quarkus Demo App Metrics](../images/quarkus-metrics.png)
