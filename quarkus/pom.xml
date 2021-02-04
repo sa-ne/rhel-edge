@@ -91,7 +91,7 @@
       <id>native</id>
       <activation>
         <property>
-          <name>jvm</name>
+          <name>native</name>
         </property>
       </activation>
       <build>
