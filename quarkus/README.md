@@ -43,8 +43,18 @@ You can then execute your native executable with: `./target/quarkus-1.0.0-SNAPSH
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
 
-# RESTEasy JAX-RS
+# Deploying on OCP
 
-<p>A Hello World RESTEasy resource</p>
+In order to build it in native executables and deploy it we added the openshift extension to the `pom.xml` which can also be done manually by running (it is already there so this is *only for information purpose*):
 
-Guide: https://quarkus.io/guides/rest-json
+```shell
+ ./mvnw quarkus:add-extension -Dextensions="openshift"
+```
+
+To actually deploy it you need to have `oc` client installed and configured, also be sure you have a project created and has your `oc` client pointing to the right project. You can execute the command below to build a native binary and deploy within the project created previously:
+
+```shell
+./mvnw clean package -Dquarkus.kubernetes.deploy=true -DskipTests -Dquarkus.kubernetes-client.trust-certs=true
+```
+The attribute `-Dquarkus.kubernetes-client.trust-certs=true` is only to skip the self-signed certs if you are using them.
+
